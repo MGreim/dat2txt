@@ -59,10 +59,6 @@ TYPE
 
 VAR
 	datei : FILE OF messsty;
-	dateiprf, dmtv : TEXT;
-	fehler : Boolean;
-	mnr : integer;
-	tempss : string;
 	dumm : integer;
         messs : messsty;
 

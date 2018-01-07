@@ -39,6 +39,8 @@ PROGRAM dat2txt;
 {Erzeugt aus Binaerem Messdatenfile ASCII File f. Plotmtv
  aufruf mtvplot messdatei profildatei ausdatei xlabel ylabel autoscale}
 
+USES strutils;
+
 TYPE
 
 	prfty =
@@ -59,27 +61,45 @@ TYPE
 
 VAR
 	datei : FILE OF messsty;
-	dumm : integer;
+	dmtv : TEXT;
         messs : messsty;
 
 
+FUNCTION trenn(trenner : string; x : double) : string;
+
+    VAR xs : string;
+
+    BEGIN
+    xs := '';
+    str(x, xs);
+    IF trenner = '.' THEN 
+        BEGIN
+        trenn := xs;
+        END
+      ELSE
+        BEGIN    
+        trenn := ReplaceStr(xs, '.', trenner);
+        END;
+    END;
+        
 
 
-PROCEDURE zeileschreiben(VAR datei : TEXT; t, v, Temp, M, winkel : double);
 
-VAR wert : double;
+PROCEDURE zeileschreiben(VAR datei : TEXT; t, v, Temp, M, winkel : double; tr : string);
+
+VAR wert : string;
 
 BEGIN
 (*        writeln(paramstr(9) + ' Zeile : t ',t:5:2, ' v: ',v:5:2,' Temp: ',Temp:5:2, ' M: ',M:5:2); *)
-		wert := t;
+		wert := trenn(tr,t);
 		write(datei ,wert,#9);
-		wert := v;
+		wert := trenn(tr,v);
 		write(datei,wert,#9);
-		wert := Temp;
+		wert := trenn(tr,Temp);
 		write(datei,wert,#9);
-		wert := M;
+		wert := trenn(tr,M);
 		write(datei, wert,#9);
-                wert := winkel;
+                wert := trenn(tr,winkel);
 		write(datei, wert,#10);
 
 
@@ -90,27 +110,27 @@ END;
 
 
 
-PROCEDURE zeileschreibenx(VAR datei : TEXT; t, regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur : double);
+PROCEDURE zeileschreibenx(VAR datei : TEXT; t, regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur : double; tr : string);
 
-VAR wert : double;
+VAR wert : string;
 
 BEGIN
 (*        writeln(paramstr(9) + ' Zeile : t ',t:5:2, ' v: ',v:5:2,' Temp: ',Temp:5:2, ' M: ',M:5:2); *)
-		wert := t;
+		wert := trenn(tr, t);
 		write(datei ,wert,#9);
-		wert := regelaus;
+		wert := trenn(tr,regelaus);
 		write(datei,wert,#9);
-		wert := geschwindigkeit;
+		wert := trenn(tr,geschwindigkeit);
 		write(datei,wert,#9);
-		wert := moment;
+		wert := trenn(tr,moment);
 		write(datei, wert,#9);
-                wert := winkel;
+                wert := trenn(tr,winkel);
 		write(datei, wert,#9);
-		wert := sollwert;
+		wert := trenn(tr,sollwert);
 		write(datei,wert,#9);
-		wert := momentmess;
+		wert := trenn(tr,momentmess);
 		write(datei, wert,#9);
-                wert := temperatur;
+                wert := trenn(tr,temperatur);
 		write(datei, wert,#10);
 
 
@@ -183,7 +203,7 @@ END;
 
 
 
-PROCEDURE rumpf;
+PROCEDURE rumpf(trenner : string);
 
 
 
@@ -195,7 +215,7 @@ BEGIN
 
 		BEGIN
 			read(datei, messs);
-			zeileschreiben(dmtv,(messs.zeit / (60*8000)), regelaus, temperatur, momentmess, winkel);
+			zeileschreiben(dmtv,(messs.zeit / (60*8000)), regelaus, temperatur, momentmess, winkel, trenner);
 
 		END;{with}
 	END;
@@ -203,7 +223,7 @@ END;
 
 
 
-PROCEDURE rumpfx;
+PROCEDURE rumpfx(trenner : string);
 
 
 
@@ -245,7 +265,7 @@ BEGIN
 
 
 
-      		zeileschreibenx(dmtv,(messs.zeit / (60*8000)), regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur);
+      		zeileschreibenx(dmtv,(messs.zeit / (60*8000)), regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur, trenner);
 
 {		     writeln(dmtv);}
 
@@ -289,7 +309,7 @@ BEGIN
 	writeln('dat2txt aufgerufen mit: 1: ',paramstr(1), ' 2: ',paramstr(2),' 3: ', paramstr(3), ' 4: ', paramstr(4));
 
 	dateioeffnen;
-        IF paramstr(4) = 'X' THEN rumpfx ELSE rumpf;
+        IF paramstr(4) = 'X' THEN rumpfx(paramstr(2)) ELSE rumpf(paramstr(2));
 	dateischliessen;
 
 

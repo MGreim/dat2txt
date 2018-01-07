@@ -1,7 +1,8 @@
 {
 
-20.01.2011
-Für Windows angepasst
+
+03.01.2017
+- nochmal etwas verschoenert f. OTH R. 
 
 13.06.2010
 Abgeleitet aus vscplot
@@ -9,10 +10,6 @@ aber einfacher
 
 - Fehlermeldung Henkel, Unna, gibt leere Dasteien aus bei Mittelung
 
-
- $Author: root $
- $Revision: 1.5 $
- $Log: vscplot.pp,v $
  Revision 1.5  2001-02-18 16:19:25+01  root
  Kann jetzt Diskettendatei schreiben
 
@@ -33,13 +30,13 @@ aber einfacher
 PROGRAM dat2txt;
 {$MODE TP}
 {$IFDEF DOS}
-USES  vglob,  vfehler2;
+
 {$ENDIF}
 
 {$IFDEF LINUX}
 
 {$ENDIF}
-{Erzeugt aus Bin�rem Messdatenfile ASCII File f. Plotmtv
+{Erzeugt aus Binaerem Messdatenfile ASCII File f. Plotmtv
  aufruf mtvplot messdatei profildatei ausdatei xlabel ylabel autoscale}
 
 TYPE
@@ -72,7 +69,7 @@ VAR
 
 
 
-PROCEDURE zeileschreiben(VAR datei : TEXT; t, v, Temp, M : double);
+PROCEDURE zeileschreiben(VAR datei : TEXT; t, v, Temp, M, winkel : double);
 
 VAR wert : double;
 
@@ -85,9 +82,41 @@ BEGIN
 		wert := Temp;
 		write(datei,wert,#9);
 		wert := M;
-		write(datei, wert);
-		write(datei, chr(13)); 
-		write(datei, chr(10));
+		write(datei, wert,#9);
+                wert := winkel;
+		write(datei, wert,#10);
+
+
+
+END;
+
+
+
+
+
+PROCEDURE zeileschreibenx(VAR datei : TEXT; t, regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur : double);
+
+VAR wert : double;
+
+BEGIN
+(*        writeln(paramstr(9) + ' Zeile : t ',t:5:2, ' v: ',v:5:2,' Temp: ',Temp:5:2, ' M: ',M:5:2); *)
+		wert := t;
+		write(datei ,wert,#9);
+		wert := regelaus;
+		write(datei,wert,#9);
+		wert := geschwindigkeit;
+		write(datei,wert,#9);
+		wert := moment;
+		write(datei, wert,#9);
+                wert := winkel;
+		write(datei, wert,#9);
+		wert := sollwert;
+		write(datei,wert,#9);
+		wert := momentmess;
+		write(datei, wert,#9);
+                wert := temperatur;
+		write(datei, wert,#10);
+
 
 
 END;
@@ -114,7 +143,7 @@ BEGIN
 	END;
 
 
-	IF paramstr(2) = '' THEN dateinamemtv := 'default.txt' ELSE dateinamemtv := paramstr(2);
+	IF paramstr(3) = '' THEN dateinamemtv := 'default.txt' ELSE dateinamemtv := paramstr(3);
 
 {$I-}
 	assign(dmtv, dateinamemtv);
@@ -149,7 +178,7 @@ BEGIN
 {$I+}
 	IF ioresult <> 0 THEN
 	BEGIN
-		writeln('Kann Datei dmtv nicht schliessen');
+		writeln('Kann Datei nicht schliessen');
 		exit;
 	END;
 
@@ -170,23 +199,64 @@ BEGIN
 
 		BEGIN
 			read(datei, messs);
-{			write(dmtv, ' t ');
+			zeileschreiben(dmtv,(messs.zeit / (60*8000)), regelaus, temperatur, momentmess, winkel);
 
-			write(dmtv, (messs.zeit / (60*8000):6:2));
-			write(dmtv,' v ');
-			write(dmtv,  regelaus:5:2);
-			write(dmtv,' T ');
-			write(dmtv, temperatur:5:1);
-			write(dmtv,' M ');
-			write(dmtv, momentmess:7:1);
-			write(dmtv, chr(13), chr(10)); }
-			zeileschreiben(dmtv,(messs.zeit / (60*8000)), regelaus, temperatur, momentmess);
+		END;{with}
+	END;
+END;
+
+
+
+PROCEDURE rumpfx;
+
+
+
+BEGIN
+	WHILE not(eof(datei)) DO
+
+	BEGIN
+		WITH messs DO
+
+		BEGIN
+		read(datei, messs);
+      (*        Datenstruktur der Binaerdatei: 
+    		Die Zeit wird in 1/8000 Sekunden (= Durchlaufzeit des Reglers) hochgezaehlt. 
+    		Der Datentyp COMP: 
+    		Wertebereich: -2E64+1 .. 2E63-1
+    		Genauigkeit: 19 Stellen
+    		Speicherbedarf: 8 Byte bzw. 64 Bit
+    		1 Vorzeichen | 63 Mantisse
+    		
+    		Sonstiges: Der Datentyp Comp wird nur bei Prozessoren vom Typ Intel 80x86 angeboten
+    		
+    		Der Datentyp DOUBLE: 
+    		Wertebereich: 5.0E-324 .. 1.7E308
+    		Genauigkeit: 15 Stellen
+    		Speicherbedarf: 8 Byte bzw. 64 Bit
+    		1 Vorzeichen | 11 Expoent  | 52 Mantisse (IEEE)
+    		
+      
+    		messsty = RECORD
+                ZEIT : comp;
+                regelaus, geschwindigkeit, moment, winkel, sollwert,
+                momentmess, temperatur : double ; 
+                
+                Aus historischen Gründen wird das Moment zweimal gespeichert: 
+                moment : korrigiert um Nullpunkt
+                momentmess : Rohwert
+                
+                *)
+
+
+
+      		zeileschreibenx(dmtv,(messs.zeit / (60*8000)), regelaus, geschwindigkeit, moment, winkel, sollwert, momentmess, temperatur);
 
 {		     writeln(dmtv);}
 
 		END;{with}
 	END;
 END;
+
 
 
 
@@ -199,30 +269,32 @@ BEGIN
 	BEGIN
 		writeln('dat2txt');
 
-		writeln('Erzeugt aus binaerem Messdatenfile vsc Daten ');
+		writeln('Erzeugt aus binaerem Messdatenfile Textdatei ');
 
 
 		writeln;
-		writeln(' aufruf dat2txt');
+		writeln(' aufruf dat2txt infile Trennzeichen outfile X');
+		writeln;
 		writeln(' liest Datei Dateien.dat ein und erzeugt die entsprechenden txt Files');
-		writeln(' paramstr(1) = Eindatei paramstr(2) = ausdatei');
-		writeln(' Reihenfolge der Spalten t v Temp M');
+		writeln(' paramstr(1) = Messdatei mit der Endung dat');
+		writeln(' paramstr(2) = Trennzeichen Komma oder Punkt');
+		writeln(' paramstr(3) = Messdatei als Textfile');
+		writeln(' paramstr(4) = wenn X gesetzt, dann erweitertes Format');
+		writeln;
+                writeln(' t regelaus, v, M, Winkel, Sollwert, Momentmess, temperatur');
+                writeln(' geschrieben (Reihenfolge wie in Messty), sonst nur ');
+
+		writeln(' t v Temp M Winkel');
 
 
 		exit;
 	END;
         writeln;
-	writeln('dat2txt aufgerufen mit: 1: ',paramstr(1), ' 2: ',paramstr(2),' 3: ', paramstr(3),' 4: ',paramstr(4), ' 5: ',
-                paramstr(5),' 6: ',paramstr(6),' 7: ',paramstr(7),' 8: ',
-                paramstr(8), ' 9: ', paramstr(9), ' 10: ',paramstr(10));
+	writeln('dat2txt aufgerufen mit: 1: ',paramstr(1), ' 2: ',paramstr(2),' 3: ', paramstr(3), ' 4: ', paramstr(4));
 
 	dateioeffnen;
-	writeln('Dateien geoeffnet');
-	writeln('Kopf geschrieben');
-	rumpf;
-	writeln('Rumpf geschrieben');
+        IF paramstr(4) = 'X' THEN rumpfx ELSE rumpf;
 	dateischliessen;
-	writeln('Datei geschlossen');
 
 
 END.

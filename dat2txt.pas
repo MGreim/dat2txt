@@ -1,8 +1,10 @@
 {
 
+08.01.2018
+- compiliert f. Windows 32 bit mit fpc 3.0.4
 
-03.01.2017
-- nochmal etwas verschoenert f. OTH R. 
+03.01.2018
+- nochmal etwas verschoenert f. OTH R.
 
 13.06.2010
 Abgeleitet aus vscplot
@@ -12,15 +14,6 @@ aber einfacher
 
  Revision 1.5  2001-02-18 16:19:25+01  root
  Kann jetzt Diskettendatei schreiben
-
- Revision 1.4  2001-02-18 15:39:40+01  root
- *** Empty log message ***
-
- Revision 1.3  2001-02-16 15:10:58+01  root
- *** Empty log message ***
-
- Revision 1.2  2001-02-16 15:09:38+01  root
- *** Empty log message ***
 
  Revision 1.1  2001-02-16 12:41:04+01  root
  Initial revision
@@ -72,16 +65,16 @@ FUNCTION trenn(trenner : string; x : double) : string;
     BEGIN
     xs := '';
     str(x, xs);
-    IF trenner = '.' THEN 
+    IF trenner = '.' THEN
         BEGIN
         trenn := xs;
         END
       ELSE
-        BEGIN    
+        BEGIN
         trenn := ReplaceStr(xs, '.', trenner);
         END;
     END;
-        
+
 
 
 
@@ -235,9 +228,9 @@ BEGIN
 
 		BEGIN
 		read(datei, messs);
-      (*        Datenstruktur der Binaerdatei: 
-    		Die Zeit wird in 1/8000 Sekunden (= Durchlaufzeit des Reglers) hochgezaehlt. 
-    		Der Datentyp COMP: 
+      (*        Datenstruktur der Binaerdatei:
+    		Die Zeit wird in 1/8000 Sekunden (= Durchlaufzeit des Reglers) hochgezaehlt.
+    		Der Datentyp COMP:
     		Wertebereich: -2E64+1 .. 2E63-1
     		Genauigkeit: 19 Stellen
     		Speicherbedarf: 8 Byte bzw. 64 Bit
@@ -245,22 +238,22 @@ BEGIN
     		
     		Sonstiges: Der Datentyp Comp wird nur bei Prozessoren vom Typ Intel 80x86 angeboten
     		
-    		Der Datentyp DOUBLE: 
+    		Der Datentyp DOUBLE:
     		Wertebereich: 5.0E-324 .. 1.7E308
     		Genauigkeit: 15 Stellen
     		Speicherbedarf: 8 Byte bzw. 64 Bit
     		1 Vorzeichen | 11 Expoent  | 52 Mantisse (IEEE)
     		
-      
+
     		messsty = RECORD
                 ZEIT : comp;
                 regelaus, geschwindigkeit, moment, winkel, sollwert,
-                momentmess, temperatur : double ; 
-                
-                Aus historischen Gründen wird das Moment zweimal gespeichert: 
+                momentmess, temperatur : double ;
+
+                Aus historischen Gründen wird das Moment zweimal gespeichert:
                 moment : korrigiert um Nullpunkt
                 momentmess : Rohwert
-                
+
                 *)
 
 

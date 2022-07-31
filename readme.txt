@@ -1,4 +1,4 @@
-dat2txt
+dat2txt (Linux) or dat2txt.exe (Windows)
 
 Commandline tool to convert the viskomat *.dat files to txt files. 
 usage: 

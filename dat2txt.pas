@@ -83,6 +83,8 @@ PROCEDURE zeileschreiben(VAR datei : TEXT; t, v, Temp, M, winkel : double; tr : 
 VAR wert : string;
 
 BEGIN
+IF tr = '' THEN tr := '.';
+
 (*        writeln(paramstr(9) + ' Zeile : t ',t:5:2, ' v: ',v:5:2,' Temp: ',Temp:5:2, ' M: ',M:5:2); *)
 		wert := trenn(tr,t);
 		write(datei ,wert,#9);

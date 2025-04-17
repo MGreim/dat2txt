@@ -1,5 +1,8 @@
 {
 
+Do 17 Apr 2025 11:54:14 CEST
+- compiliert f. Linux mit fpc 3.0.4 und  Windows 64 bit mit fpc 3.2.2
+
 08.01.2018
 - compiliert f. Windows 32 bit mit fpc 3.0.4
 
@@ -29,25 +32,18 @@ PROGRAM dat2txt;
 {$IFDEF LINUX}
 
 {$ENDIF}
-{Erzeugt aus Binaerem Messdatenfile ASCII File f. Plotmtv
- aufruf mtvplot messdatei profildatei ausdatei xlabel ylabel autoscale}
 
 USES strutils;
 
 TYPE
 
-	prfty =
-	RECORD
-		t, v, Temp, M : double
-	END;
+
 
         messsty = RECORD
                 ZEIT : comp;
                 regelaus, geschwindigkeit, moment, winkel, sollwert,
                 momentmess, temperatur : double;
         END;
-
-        messsfilety = FILE OF messsty;
 
 
 
@@ -302,7 +298,7 @@ BEGIN
 	END;
         writeln;
 	writeln('dat2txt aufgerufen mit: 1: ',paramstr(1), ' 2: ',paramstr(2),' 3: ', paramstr(3), ' 4: ', paramstr(4));
-
+	IF paramstr(3) = '' THEN writeln('Ausgabedatei default.txt');
 	dateioeffnen;
         IF paramstr(4) = 'X' THEN rumpfx(paramstr(2)) ELSE rumpf(paramstr(2));
 	dateischliessen;

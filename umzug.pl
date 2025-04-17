@@ -5,11 +5,9 @@ $rep = "dat2txt.git";
 $repoalt = "git\@gitlab:$rep";
 print "REPOALT: $repoalt\n";
 
-$reponeu = "git\@gitlab.schleibinger.com:greim/$rep";
+
 
 print "REPONEU: $reponeu\n";
-
-$reponetz = "https://gitlab.com/SchleibingerGerteTeubertu.GreimGmbH/$rep";
 
 print "REPONETZ: $reponetz\n";
 
@@ -36,8 +34,6 @@ wait;
 print "fertig lokal \n";
 
 
-# User greim@schleibinger.com
-# PW: bierfo
 
 `git remote add netz2 $reponetz`;
 
